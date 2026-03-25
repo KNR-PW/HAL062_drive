@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/benji/cube/HAL062_drive/build/Debug/cmake_install.cmake",
-		"/home/benji/cube/HAL062_drive/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
