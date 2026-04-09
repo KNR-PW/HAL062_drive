@@ -17,3 +17,9 @@ void pid_calc(pid_reg *a, float err )
     if (a->out < a->min) a->out = a->min;
 
 }
+
+void pid_init(pid_reg *a,float max,float min)
+{
+    a->max = max;
+    a->min = min;
+}

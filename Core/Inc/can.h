@@ -46,6 +46,7 @@ union Message {
 	uint32_t u32[2];
 	float f32[2];
 };
+extern volatile int16_t target_speed;
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

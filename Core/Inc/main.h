@@ -63,16 +63,18 @@ void Error_Handler(void);
 #define Enk_A_GPIO_Port GPIOA
 #define PWM_Pin GPIO_PIN_11
 #define PWM_GPIO_Port GPIOB
-#define LED2_Pin GPIO_PIN_8
-#define LED2_GPIO_Port GPIOC
-#define LED1_Pin GPIO_PIN_9
-#define LED1_GPIO_Port GPIOC
+#define LED_Status_Pin GPIO_PIN_8
+#define LED_Status_GPIO_Port GPIOC
+#define LED_Error_Pin GPIO_PIN_9
+#define LED_Error_GPIO_Port GPIOC
 #define ResetBtn_Pin GPIO_PIN_4
 #define ResetBtn_GPIO_Port GPIOB
 #define PowerBtn_Pin GPIO_PIN_5
 #define PowerBtn_GPIO_Port GPIOB
 #define Enk_PWM_Pin GPIO_PIN_6
 #define Enk_PWM_GPIO_Port GPIOB
+#define HW_Telemetry_Pin GPIO_PIN_7
+#define HW_Telemetry_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

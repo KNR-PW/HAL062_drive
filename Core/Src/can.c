@@ -37,7 +37,7 @@ static union Message RX_payload;
 //static void CAN_recivedCallback(CAN_HandleTypeDef *hcan);
 //static void CAN_errorCallback(CAN_HandleTypeDef *hcan);
 
-uint8_t target_speed = 0;
+
 
 void CAN_init(void) {
 	// setup TX header
@@ -195,9 +195,9 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 	switch (can_rxHeader.StdId) {
 	case 20:
 		if (BOARD_SIDE == LEFT_SIDE)
-			target_speed = -((int8_t) RX_payload.u8[0]);
+			target_speed = -(int16_t)((int8_t) RX_payload.u8[0]);
 		else
-			target_speed = ((int8_t) RX_payload.u8[1]);
+			target_speed = -(int16_t)((int8_t) RX_payload.u8[1]);
 		break;
 
 	// case 51:

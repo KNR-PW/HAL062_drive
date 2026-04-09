@@ -24,6 +24,6 @@ typedef struct
 
 
 void pid_calc(pid_reg *a, float err );
-
+void pid_init(pid_reg *a,float max,float min);
 
 #endif
