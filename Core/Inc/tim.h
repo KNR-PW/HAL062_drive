@@ -21,7 +21,6 @@
 #ifndef __TIM_H__
 #define __TIM_H__
 
-#include "pid.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,7 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "pid.h"
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim1;
@@ -49,9 +48,10 @@ extern volatile float error;
 extern pid_reg PID;
 #define PI 3.14159265f
 #define TICKS_PER_ROTATION 4096.0f
-#define WHEEL_RADIUS_M 0.15f 
-#define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_M) 
-
+#define WHEEL_RADIUS_C 15 
+#define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_C) 
+#define MAX_PWM_STEP 8
+#define MAX_STEP 1
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);

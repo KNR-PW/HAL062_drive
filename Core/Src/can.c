@@ -23,7 +23,7 @@
 /* USER CODE BEGIN 0 */
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
-#define BOARD_SIDE RIGHT_SIDE
+#define BOARD_SIDE LEFT_SIDE
 
 
 static CAN_HandleTypeDef *can_handle = &hcan;
@@ -33,6 +33,8 @@ static CAN_RxHeaderTypeDef can_rxHeader;
 static uint32_t can_txMailbox;
 
 static union Message RX_payload;
+
+float speed_scale = 2.0;
 
 //static void CAN_recivedCallback(CAN_HandleTypeDef *hcan);
 //static void CAN_errorCallback(CAN_HandleTypeDef *hcan);
@@ -59,6 +61,26 @@ void CAN_init(void) {
 	sFilterConfig.FilterActivation = ENABLE;
 	sFilterConfig.SlaveStartFilterBank = 0;
 	HAL_CAN_ConfigFilter(can_handle, &sFilterConfig);
+
+
+
+/*
+  CAN_FilterTypeDef sFilterConfig = {0}; 
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; 
+  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000; 
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+  HAL_CAN_ConfigFilter(can_handle, &sFilterConfig);
+*/
+
+
+
 
 	//HAL_CAN_RegisterCallback(can_handle, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, CAN_recivedCallback);
 	//HAL_CAN_RegisterCallback(can_handle, HAL_CAN_ERROR_CB_ID, CAN_errorCallback);
@@ -88,11 +110,11 @@ void MX_CAN_Init(void)
 
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 4;
+  hcan.Init.Prescaler = 2;
   hcan.Init.Mode = CAN_MODE_NORMAL;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_15TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_2TQ;
+  hcan.Init.TimeSeg1 = CAN_BS1_12TQ;
+  hcan.Init.TimeSeg2 = CAN_BS2_3TQ;
   hcan.Init.TimeTriggeredMode = DISABLE;
   hcan.Init.AutoBusOff = DISABLE;
   hcan.Init.AutoWakeUp = DISABLE;
@@ -189,17 +211,24 @@ void CAN_transmit(uint8_t id, uint8_t *data, uint8_t data_lenght) {
 	HAL_CAN_AddTxMessage(can_handle, &can_txHeader, data, &can_txMailbox);
 }
 
-void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rxHeader, RX_payload.u8);
 
 	switch (can_rxHeader.StdId) {
 	case 20:
+    if((int8_t) RX_payload.u8[2])
+    {
+      speed_scale = (int8_t) RX_payload.u8[2];
+      if(speed_scale > 3 || speed_scale < 0) speed_scale = 1;
+    }
 		if (BOARD_SIDE == LEFT_SIDE)
-			target_speed = -(int16_t)((int8_t) RX_payload.u8[0]);
-		else
-			target_speed = -(int16_t)((int8_t) RX_payload.u8[1]);
-		break;
+			target_speed = -((int16_t)((int8_t) RX_payload.u8[0])) * speed_scale;
 
+		else
+			target_speed = ((int16_t)((int8_t) RX_payload.u8[1])) * speed_scale;
+		
+    
+    break;
 	// case 51:
 	// 	TP = RX_payload.f32[0];
 	// 	break;

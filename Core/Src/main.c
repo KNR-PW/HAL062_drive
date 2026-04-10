@@ -81,10 +81,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
-  HAL_TIM_Base_Start_IT(&htim4);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-  pid_init(&PID,1600,-1600);
+  
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -102,7 +99,11 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+  pid_init(&PID,1600,-1600,5.5,4.0,0);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */

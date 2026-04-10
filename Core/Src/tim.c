@@ -20,12 +20,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
 #include "can.h"
-#include "pid.h"
-#include "stm32f1xx_hal_tim.h"
 
 /* USER CODE BEGIN 0 */
 volatile float speed_RPM = 0.0f;
-volatile float speed_MPS = 0.0f;
+volatile float speed_CPS = 0.0f;
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
@@ -142,11 +140,11 @@ void MX_TIM3_Init(void)
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 0;
+  sConfig.IC1Filter = 15;
   sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 0;
+  sConfig.IC2Filter = 15;
   if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -177,7 +175,7 @@ void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 15;
+  htim4.Init.Prescaler = 7;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 39999;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -287,14 +285,16 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
 
   /* USER CODE END TIM2_MspPostInit 0 */
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     /**TIM2 GPIO Configuration
-    PA3     ------> TIM2_CH4
+    PB11     ------> TIM2_CH4
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Pin = GPIO_PIN_11;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    __HAL_AFIO_REMAP_TIM2_PARTIAL_2();
 
   /* USER CODE BEGIN TIM2_MspPostInit 1 */
 
@@ -374,26 +374,57 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 
 /* USER CODE BEGIN 1 */
 
-void setPWM(int16_t duty)
+// min PWM - 64_000*5% = 3_200
+// mid PWM - 64_000*7.5% = 4_800
+// max PWM - 64_000*10% = 6_400
+void apply_ramp_and_set_pwm(int16_t pid_output) 
 {
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 4800 + duty);
-} 
+    // static int16_t current_pwm_value = 0;
+    // int16_t diff = pid_output - current_pwm_value;
+
+    // if (diff > MAX_PWM_STEP) {
+    //     current_pwm_value += MAX_PWM_STEP;
+    // } else if (diff < -MAX_PWM_STEP) {
+    //     current_pwm_value -= MAX_PWM_STEP;
+    // } else {
+    //     current_pwm_value = pid_output;
+    // }
+
+    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 4800 + pid_output);
+}
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if(htim==&htim4)
+  if (htim->Instance == TIM4)//przerwanie co 10ms, 100Hz
   {
     uint16_t current_cnt = __HAL_TIM_GET_COUNTER(&htim3);
+    
     int16_t delta = (int16_t)(current_cnt - last_encoder_cnt);
-    current_speed = delta;
     last_encoder_cnt = current_cnt;
 
-    float speed_f = (float)current_speed;
-    speed_RPM = (speed_f * 6000.0f) / TICKS_PER_ROTATION;
-    speed_MPS = ((speed_f * 100.0f) / TICKS_PER_ROTATION) * WHEEL_CIRCUMFERENCE;
+    speed_CPS = ((delta * 100.0f) / TICKS_PER_ROTATION) * WHEEL_CIRCUMFERENCE;
+    static int16_t prev_target = 0;
+    int16_t diff = target_speed-prev_target;
+    if (diff > MAX_STEP) {
+        prev_target += MAX_STEP;
+    } else if (diff < -MAX_STEP) {
+        prev_target -= MAX_STEP;
+    } else {
+        prev_target = target_speed;
+    }
 
-    error = target_speed - current_speed;
-    pid_calc(&PID, error);
-    setPWM(PID.out);
+    error = prev_target - speed_CPS;
+
+    if(prev_target != 0)
+    {
+      pid_calc(&PID, error);
+      apply_ramp_and_set_pwm(PID.out);
+    }
+    else {
+      apply_ramp_and_set_pwm(0);
+      PID.integ = 0;
+      PID.eps = 0;
+      PID.eps_prev = 0;
+    }
   }
 }
 /* USER CODE END 1 */

@@ -2,7 +2,7 @@
 
 void pid_calc(pid_reg *a, float err )
 {
-    a->eps = a->Kp * err;
+    a->eps = err;
 
     a->integ += a->Ki * 0.5 * (a->eps + a->eps_prev) * Ts;
     if (a->integ > a->max) a->integ = a->max;
@@ -10,7 +10,7 @@ void pid_calc(pid_reg *a, float err )
 
     a->dif = a->Kd * (a->eps - a->eps_prev) * Fs;
 
-    a->out = a->eps + a->integ + a->dif;
+    a->out = (a->eps * a->Kp) + a->integ + a->dif;
     a->eps_prev = a->eps;
 
     if (a->out > a->max) a->out = a->max;
@@ -18,8 +18,11 @@ void pid_calc(pid_reg *a, float err )
 
 }
 
-void pid_init(pid_reg *a,float max,float min)
+void pid_init(pid_reg *a,float max,float min,float p, float i, float d)
 {
     a->max = max;
     a->min = min;
+    a->Kp = p;
+    a->Ki = i;
+    a->Kd = d;
 }
