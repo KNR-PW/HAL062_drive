@@ -34,8 +34,10 @@ static uint32_t can_txMailbox;
 
 static union Message RX_payload;
 
-float speed_scale = 2.0;
+float speed_scale = 1.0;
 
+uint16_t comm_wchdg = 0;
+uint8_t ramp = 2;
 //static void CAN_recivedCallback(CAN_HandleTypeDef *hcan);
 //static void CAN_errorCallback(CAN_HandleTypeDef *hcan);
 
@@ -216,10 +218,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 
 	switch (can_rxHeader.StdId) {
 	case 20:
-    if((int8_t) RX_payload.u8[2])
+    comm_wchdg = 0;
+    if(RX_payload.u8[2] != 0)
     {
-      speed_scale = (int8_t) RX_payload.u8[2];
-      if(speed_scale > 3 || speed_scale < 0) speed_scale = 1;
+      speed_scale = RX_payload.u8[2]/100.0;
+      //if(speed_scale > 3 || speed_scale < 0) speed_scale = 1;
+    }
+    if(RX_payload.u8[3] != 0)
+    {
+      ramp = RX_payload.u8[3];
     }
 		if (BOARD_SIDE == LEFT_SIDE)
 			target_speed = -((int16_t)((int8_t) RX_payload.u8[0])) * speed_scale;

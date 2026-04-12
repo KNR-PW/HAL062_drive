@@ -396,6 +396,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM4)//przerwanie co 10ms, 100Hz
   {
+    comm_wchdg++;
+    if(comm_wchdg>=50)
+    {
+      apply_ramp_and_set_pwm(0);
+      PID.integ = 0;
+      PID.eps = 0;
+      PID.eps_prev = 0;
+    }
     uint16_t current_cnt = __HAL_TIM_GET_COUNTER(&htim3);
     
     int16_t delta = (int16_t)(current_cnt - last_encoder_cnt);
@@ -404,10 +412,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     speed_CPS = ((delta * 100.0f) / TICKS_PER_ROTATION) * WHEEL_CIRCUMFERENCE;
     static int16_t prev_target = 0;
     int16_t diff = target_speed-prev_target;
-    if (diff > MAX_STEP) {
-        prev_target += MAX_STEP;
-    } else if (diff < -MAX_STEP) {
-        prev_target -= MAX_STEP;
+    if (diff > ramp) {
+        prev_target += ramp;
+    } else if (diff < -ramp) {
+        prev_target -= ramp;
     } else {
         prev_target = target_speed;
     }

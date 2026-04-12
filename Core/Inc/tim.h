@@ -21,6 +21,7 @@
 #ifndef __TIM_H__
 #define __TIM_H__
 
+#include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,6 +46,7 @@ extern volatile uint16_t last_encoder_cnt;
 extern volatile int16_t current_speed;     
 extern volatile int16_t target_speed;
 extern volatile float error;
+extern uint16_t comm_wchdg;
 extern pid_reg PID;
 #define PI 3.14159265f
 #define TICKS_PER_ROTATION 4096.0f
@@ -52,6 +54,7 @@ extern pid_reg PID;
 #define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_C) 
 #define MAX_PWM_STEP 8
 #define MAX_STEP 1
+extern uint8_t ramp;
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
