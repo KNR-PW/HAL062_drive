@@ -102,7 +102,7 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-  pid_init(&PID,1600,-1600,5.5,4.0,0);
+  pid_init(&PID,1600,-1600,4.0,15.0,0);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
   /* USER CODE END 2 */
 

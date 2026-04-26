@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "stm32f1xx_hal_rcc.h"
 
 /* USER CODE BEGIN 0 */
 #define LEFT_SIDE 0
