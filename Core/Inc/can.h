@@ -35,7 +35,7 @@ extern "C" {
 extern CAN_HandleTypeDef hcan;
 
 /* USER CODE BEGIN Private defines */
-
+void CAN_transmit(uint8_t id, uint8_t *data, uint8_t data_lenght);
 /* USER CODE END Private defines */
 
 void MX_CAN_Init(void);

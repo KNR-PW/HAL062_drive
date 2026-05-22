@@ -22,6 +22,7 @@
 #include "stm32f1xx_hal_rcc.h"
 
 /* USER CODE BEGIN 0 */
+#include "pid.h"
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
 #define BOARD_SIDE LEFT_SIDE
@@ -41,7 +42,7 @@ uint16_t comm_wchdg = 0;
 uint8_t ramp = 2;
 //static void CAN_recivedCallback(CAN_HandleTypeDef *hcan);
 //static void CAN_errorCallback(CAN_HandleTypeDef *hcan);
-
+extern pid_reg PID;
 
 
 void CAN_init(void) {
@@ -220,6 +221,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 	switch (can_rxHeader.StdId) {
 	case 20:
     comm_wchdg = 0;
+    if(RX_payload.u8[4] != 0)
+    {
+      PID.max = RX_payload.u8[4];
+      PID.min = RX_payload.u8[4];
+    }
     if(RX_payload.u8[2] != 0)
     {
       speed_scale = RX_payload.u8[2]/100.0;

@@ -22,8 +22,11 @@
 #include "can.h"
 
 /* USER CODE BEGIN 0 */
+#include "pid.h"
+#include <string.h>
 volatile float speed_RPM = 0.0f;
 volatile float speed_CPS = 0.0f;
+extern pid_reg PID;
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
@@ -432,6 +435,44 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       PID.integ = 0;
       PID.eps = 0;
       PID.eps_prev = 0;
+    }
+    
+    static uint8_t counter = 0;
+    counter++;
+    if(counter>10)
+    {
+      // -------------------------------------------------------------
+    // FRAME 1 (ID 0x32): Speeds (8 bytes total)
+    // -------------------------------------------------------------
+    uint8_t frame1[8];
+    // Copy 4 bytes of speed_CPS into bytes 0-3
+    memcpy(&frame1[0], (void*)&speed_CPS, sizeof(float)); 
+    // Copy 4 bytes of speed_RPM into bytes 4-7
+    memcpy(&frame1[4], (void*)&speed_RPM, sizeof(float)); 
+    
+    CAN_transmit(0x32, frame1, 8);
+
+    // -------------------------------------------------------------
+    // FRAME 2 (ID 0x33): Target & Kp (6 bytes total)
+    // -------------------------------------------------------------
+    uint8_t frame2[8] = {0}; // Initialize to 0
+    // Copy 2 bytes of prev_target into bytes 0-1
+    memcpy(&frame2[0], &prev_target, sizeof(int16_t));
+    // Copy 4 bytes of PID.Kp into bytes 2-5
+    memcpy(&frame2[2], &PID.Kp, sizeof(float));
+    
+    CAN_transmit(0x33, frame2, 6); // Only sending 6 bytes
+
+    // -------------------------------------------------------------
+    // FRAME 3 (ID 0x34): Ki & Kd (8 bytes total)
+    // -------------------------------------------------------------
+    uint8_t frame3[8];
+    // Copy 4 bytes of PID.Ki into bytes 0-3
+    memcpy(&frame3[0], &PID.Ki, sizeof(float));
+    // Copy 4 bytes of PID.Kd into bytes 4-7
+    memcpy(&frame3[4], &PID.Kd, sizeof(float));
+    
+    CAN_transmit(0x34, frame3, 8);
     }
   }
 }
