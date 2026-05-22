@@ -55,6 +55,29 @@ extern pid_reg PID;
 #define MAX_PWM_STEP 8
 #define MAX_STEP 1
 extern uint8_t ramp;
+// 1. Define the available wheels
+#define WHEEL_FRONT_LEFT   0
+#define WHEEL_FRONT_RIGHT  1
+#define WHEEL_REAR_LEFT    2
+#define WHEEL_REAR_RIGHT   3
+
+// =================================================================
+// 2. SELECT THE CURRENT WHEEL HERE BEFORE PROGRAMMING
+#define CURRENT_WHEEL WHEEL_FRONT_LEFT
+// =================================================================
+
+// 3. Automatically calculate the CAN IDs based on the selected wheel
+// This creates an offset of 0x10 (16) for each wheel:
+// Front Left  base = 0x30 -> Frames: 0x32, 0x33, 0x34
+// Front Right base = 0x40 -> Frames: 0x42, 0x43, 0x44
+// Rear Left   base = 0x50 -> Frames: 0x52, 0x53, 0x54
+// Rear Right  base = 0x60 -> Frames: 0x62, 0x63, 0x64
+
+#define BASE_CAN_ID       (0x30 + (CURRENT_WHEEL * 0x10))
+
+#define CAN_ID_FRAME_1    (BASE_CAN_ID + 0x02) // Speeds
+#define CAN_ID_FRAME_2    (BASE_CAN_ID + 0x03) // Target & Kp
+#define CAN_ID_FRAME_3    (BASE_CAN_ID + 0x04) // Ki & Kd
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
