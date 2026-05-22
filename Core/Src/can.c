@@ -22,10 +22,11 @@
 #include "stm32f1xx_hal_rcc.h"
 
 /* USER CODE BEGIN 0 */
+#include "tim.h"
 #include "pid.h"
 #define LEFT_SIDE 0
 #define RIGHT_SIDE 1
-#define BOARD_SIDE LEFT_SIDE
+#define BOARD_SIDE CURRENT_WHEEL % 2
 
 
 static CAN_HandleTypeDef *can_handle = &hcan;
@@ -47,24 +48,25 @@ extern pid_reg PID;
 
 void CAN_init(void) {
 	// setup TX header
-	can_txHeader.StdId = 0;
-	can_txHeader.IDE = CAN_ID_STD;
-	can_txHeader.RTR = CAN_RTR_DATA;
-	can_txHeader.DLC = 8;
+  can_txHeader.StdId = 0;
+  can_txHeader.IDE = CAN_ID_STD;
+  can_txHeader.RTR = CAN_RTR_DATA;
+  can_txHeader.DLC = 8;
 
-	// setup filter 
-	CAN_FilterTypeDef sFilterConfig;
-	sFilterConfig.FilterBank = 0u;
-	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-	sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-	sFilterConfig.FilterIdHigh = (0x14 << 5); // Pierwszy filtr na ID 0x14 (przesunięcie o 5 bitów)
-	sFilterConfig.FilterIdLow = (0x16 << 5); // Drugi filtr na ID 0x15 (przesunięcie o 5 bitów)
-	sFilterConfig.FilterMaskIdHigh = (0xFE << 5); // Maska dla obu filtrów (ignoruje ostatni bit)
-	sFilterConfig.FilterMaskIdLow = (0xFE << 5);
-	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	sFilterConfig.FilterActivation = ENABLE;
-	sFilterConfig.SlaveStartFilterBank = 0;
-	HAL_CAN_ConfigFilter(can_handle, &sFilterConfig);
+  // Open CAN Filter to accept ALL incoming messages
+  CAN_FilterTypeDef sFilterConfig = {0}; 
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; 
+  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000; // 0x0000 mask means "ignore ID checks, accept everything"
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+  
+  HAL_CAN_ConfigFilter(can_handle, &sFilterConfig);
 
 
 
@@ -243,18 +245,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 		
     
     break;
-	// case 51:
-	// 	TP = RX_payload.f32[0];
-	// 	break;
-	// case 52:
-	// 	PID_K = RX_payload.f32[0];
-	// 	break;
-	// case 53:
-	// 	PID_TD = RX_payload.f32[0];
-	// 	break;
-	// case 54:
-	// 	PID_TI = RX_payload.f32[0];
-	// 	break;
+  case 51:
+    PID.Kp = RX_payload.f32[0];
+    break;
+    
+  case 52:
+    PID.Ki = RX_payload.f32[0];
+    break;
+    
+  case 53:
+    PID.Kd = RX_payload.f32[0];
+    break;
 
 	default:
 		break;
