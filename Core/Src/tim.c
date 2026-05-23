@@ -397,7 +397,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM4)//przerwanie co 10ms, 100Hz
   {
     comm_wchdg++;
-    if(comm_wchdg>=50)
+    if(comm_wchdg>=100)
     {
       apply_ramp_and_set_pwm(0);
       PID.integ = 0;
