@@ -39,6 +39,8 @@ float speed_scale = 1.0;
 
 uint16_t comm_wchdg = 0;
 uint8_t ramp = 2;
+#include "pid.h"
+extern pid_reg PID;
 //static void CAN_recivedCallback(CAN_HandleTypeDef *hcan);
 //static void CAN_errorCallback(CAN_HandleTypeDef *hcan);
 
