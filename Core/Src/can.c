@@ -225,8 +225,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     comm_wchdg = 0;
     if(RX_payload.u8[4] != 0)
     {
-      PID.max = RX_payload.u8[4];
-      PID.min = RX_payload.u8[4];
+      PID.max = RX_payload.u8[4]*10;
+      PID.min = RX_payload.u8[4]*10;
     }
     if(RX_payload.u8[2] != 0)
     {
