@@ -220,6 +220,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 	switch (can_rxHeader.StdId) {
 	case 20:
     comm_wchdg = 0;
+    if(RX_payload.u8[4] != 0)//antiwindup limits
+    {
+      PID.max = RX_payload.u8[4]*10;
+      PID.min = RX_payload.u8[4]*10;
+    }
     if(RX_payload.u8[2] != 0)
     {
       speed_scale = RX_payload.u8[2]/100.0;
