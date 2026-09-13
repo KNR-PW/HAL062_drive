@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    tim.h
-  * @brief   This file contains all the function prototypes for
-  *          the tim.c file
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    tim.h
+ * @brief   This file contains all the function prototypes for
+ *          the tim.c file
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2026 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __TIM_H__
@@ -42,18 +42,18 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN Private defines */
-extern volatile uint16_t last_encoder_cnt; 
-extern volatile int16_t current_speed;     
+extern volatile uint16_t last_encoder_cnt;
+extern volatile int16_t current_speed;
 extern volatile int16_t target_speed;
 extern volatile float error;
 extern uint16_t comm_wchdg;
 extern pid_reg PID;
-#define PI 3.14159265f
-#define TICKS_PER_ROTATION 4096.0f
-#define WHEEL_RADIUS_C 15 
-#define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_C) 
-#define MAX_PWM_STEP 8
-#define MAX_STEP 1
+#define PI                  3.14159265f
+#define TICKS_PER_ROTATION  4096.0f
+#define WHEEL_RADIUS_C      15
+#define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_C)
+#define MAX_PWM_STEP        8
+#define MAX_STEP            1
 extern uint8_t ramp;
 /* USER CODE END Private defines */
 
@@ -73,4 +73,3 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 #endif
 
 #endif /* __TIM_H__ */
-
