@@ -1,0 +1,35 @@
+BasedOnStyle: LLVM
+Language: Cpp
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces
+BreakBeforeBraces: Attach
+
+# Space BEFORE opening paren - this is the key change
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true # if ( ) ✓
+  AfterFunctionDefinitionName: false # void func( ) not void func ( )
+  AfterFunctionDeclarationName: false # void func( ); not void func ( );
+  AfterIfMacros: true
+  AfterOverloadedOperator: false
+  BeforeNonEmptyParentheses: false
+
+
+# Packing
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AlignAfterOpenBracket: BlockIndent
+BinPackParameters: false
+BinPackArguments: false
+
+# Other settings
+PointerAlignment: Right
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AlignConsecutiveMacros: true
+AlignOperands: true
+BreakBeforeBinaryOperators: None
