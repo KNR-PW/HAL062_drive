@@ -382,16 +382,16 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 // max PWM - 64_000*10% = 6_400
 void apply_ramp_and_set_pwm(int16_t pid_output) 
 {
-    // static int16_t current_pwm_value = 0;
-    // int16_t diff = pid_output - current_pwm_value;
+    static int16_t current_pwm_value = 0;
+    int16_t diff = pid_output - current_pwm_value;
 
-    // if (diff > MAX_PWM_STEP) {
-    //     current_pwm_value += MAX_PWM_STEP;
-    // } else if (diff < -MAX_PWM_STEP) {
-    //     current_pwm_value -= MAX_PWM_STEP;
-    // } else {
-    //     current_pwm_value = pid_output;
-    // }
+    if (diff > MAX_PWM_STEP) {
+        current_pwm_value += MAX_PWM_STEP;
+    } else if (diff < -MAX_PWM_STEP) {
+        current_pwm_value -= MAX_PWM_STEP;
+    } else {
+        current_pwm_value = pid_output;
+    }
 
     __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, 4800 + pid_output);
 }
