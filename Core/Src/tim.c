@@ -19,9 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
-#include "can.h"
 
 /* USER CODE BEGIN 0 */
+#include "board_params.h"
 volatile float speed_RPM = 0.0f;
 volatile float speed_CPS = 0.0f;
 /* USER CODE END 0 */
@@ -238,7 +238,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *tim_encoderHandle) {
         PA6     ------> TIM3_CH1
         PA7     ------> TIM3_CH2
         */
-        GPIO_InitStruct.Pin = Enk_B_Pin | Enk_A_Pin;
+        GPIO_InitStruct.Pin = ENK_A_Pin | ENK_B_Pin;
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -260,10 +260,10 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle) {
         /**TIM2 GPIO Configuration
         PB11     ------> TIM2_CH4
         */
-        GPIO_InitStruct.Pin = GPIO_PIN_11;
+        GPIO_InitStruct.Pin = ESC_PWM_Pin;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+        HAL_GPIO_Init(ESC_PWM_GPIO_Port, &GPIO_InitStruct);
 
         __HAL_AFIO_REMAP_TIM2_PARTIAL_2();
 
@@ -326,7 +326,7 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef *tim_encoderHandle) {
         PA6     ------> TIM3_CH1
         PA7     ------> TIM3_CH2
         */
-        HAL_GPIO_DeInit(GPIOA, Enk_B_Pin | Enk_A_Pin);
+        HAL_GPIO_DeInit(GPIOA, ENK_A_Pin | ENK_B_Pin);
 
         /* USER CODE BEGIN TIM3_MspDeInit 1 */
 
@@ -347,7 +347,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM4) // przerwanie co 10ms, 100Hz
     {
         comm_wchdg++;
-        if (comm_wchdg >= 100) { // watchdog
+        if (comm_wchdg >= 100 && ENABLE_WATCHDOG) { // watchdog
             set_pwm(0);
             PID.integ = 0;
             PID.eps = 0;

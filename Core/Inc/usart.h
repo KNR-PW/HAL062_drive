@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
- * @file    tim.h
+ * @file    usart.h
  * @brief   This file contains all the function prototypes for
- *          the tim.c file
+ *          the usart.c file
  ******************************************************************************
  * @attention
  *
@@ -18,8 +18,8 @@
  */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TIM_H__
-#define __TIM_H__
+#ifndef __USART_H__
+#define __USART_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,39 +29,16 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include "pid.h"
+
 /* USER CODE END Includes */
 
-extern TIM_HandleTypeDef htim1;
-
-extern TIM_HandleTypeDef htim2;
-
-extern TIM_HandleTypeDef htim3;
-
-extern TIM_HandleTypeDef htim4;
+extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
-extern volatile uint16_t last_encoder_cnt;
-extern volatile int16_t current_speed;
-extern volatile int16_t target_speed;
-extern volatile float error;
-extern uint16_t comm_wchdg;
-extern pid_reg PID;
-#define PI                  3.14159265f
-#define TICKS_PER_ROTATION  4096.0f
-#define WHEEL_RADIUS_C      15
-#define WHEEL_CIRCUMFERENCE (2.0f * PI * WHEEL_RADIUS_C)
-#define MAX_PWM_STEP        8
-#define MAX_STEP            1
-extern uint8_t ramp;
+
 /* USER CODE END Private defines */
 
-void MX_TIM1_Init(void);
-void MX_TIM2_Init(void);
-void MX_TIM3_Init(void);
-void MX_TIM4_Init(void);
-
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -71,4 +48,4 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 }
 #endif
 
-#endif /* __TIM_H__ */
+#endif /* __USART_H__ */

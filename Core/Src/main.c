@@ -19,12 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "dma.h"
 #include "gpio.h"
 #include "tim.h"
+#include "usart.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "telemetry.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,17 +93,21 @@ int main(void) {
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
+    MX_DMA_Init();
     MX_CAN_Init();
     MX_TIM1_Init();
     MX_TIM4_Init();
     MX_TIM2_Init();
     MX_TIM3_Init();
+    MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
     HAL_TIM_Base_Start_IT(&htim4);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-    pid_init(&PID, 1600, -1600, 4.0, 15.0, 0);
+    pid_init(&PID, 200, -200, 4.0, 15.0, 0);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+
+    telemetry_init(&huart1);
     /* USER CODE END 2 */
 
     /* Infinite loop */

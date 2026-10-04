@@ -50,26 +50,26 @@ void MX_GPIO_Init(void) {
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOC, LED_Status_Pin | LED_Error_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC, LED_STATUS_Pin | LED_ERROR_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5 | TELEM_DIR_Pin, GPIO_PIN_RESET);
 
-    /*Configure GPIO pins : LED_Status_Pin LED_Error_Pin */
-    GPIO_InitStruct.Pin = LED_Status_Pin | LED_Error_Pin;
+    /*Configure GPIO pins : LED_STATUS_Pin LED_ERROR_Pin */
+    GPIO_InitStruct.Pin = LED_STATUS_Pin | LED_ERROR_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : ResetBtn_Pin Enk_PWM_Pin HW_Telemetry_Pin */
-    GPIO_InitStruct.Pin = ResetBtn_Pin | Enk_PWM_Pin | HW_Telemetry_Pin;
+    /*Configure GPIO pin : ResetBtn_Pin */
+    GPIO_InitStruct.Pin = ResetBtn_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(ResetBtn_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : PB5 */
-    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    /*Configure GPIO pins : PB5 TELEM_DIR_Pin */
+    GPIO_InitStruct.Pin = GPIO_PIN_5 | TELEM_DIR_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

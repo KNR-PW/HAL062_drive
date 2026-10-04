@@ -57,20 +57,24 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Enk_B_Pin              GPIO_PIN_6
-#define Enk_B_GPIO_Port        GPIOA
-#define Enk_A_Pin              GPIO_PIN_7
-#define Enk_A_GPIO_Port        GPIOA
-#define LED_Status_Pin         GPIO_PIN_8
-#define LED_Status_GPIO_Port   GPIOC
-#define LED_Error_Pin          GPIO_PIN_9
-#define LED_Error_GPIO_Port    GPIOC
-#define ResetBtn_Pin           GPIO_PIN_4
-#define ResetBtn_GPIO_Port     GPIOB
-#define Enk_PWM_Pin            GPIO_PIN_6
-#define Enk_PWM_GPIO_Port      GPIOB
-#define HW_Telemetry_Pin       GPIO_PIN_7
-#define HW_Telemetry_GPIO_Port GPIOB
+#define ENK_A_Pin                  GPIO_PIN_6
+#define ENK_A_GPIO_Port            GPIOA
+#define ENK_B_Pin                  GPIO_PIN_7
+#define ENK_B_GPIO_Port            GPIOA
+#define ESC_PWM_Pin                GPIO_PIN_11
+#define ESC_PWM_GPIO_Port          GPIOB
+#define LED_STATUS_Pin             GPIO_PIN_8
+#define LED_STATUS_GPIO_Port       GPIOC
+#define LED_ERROR_Pin              GPIO_PIN_9
+#define LED_ERROR_GPIO_Port        GPIOC
+#define ResetBtn_Pin               GPIO_PIN_4
+#define ResetBtn_GPIO_Port         GPIOB
+#define UNUSED_USART1_TX_Pin       GPIO_PIN_6
+#define UNUSED_USART1_TX_GPIO_Port GPIOB
+#define TELEM_RX_Pin               GPIO_PIN_7
+#define TELEM_RX_GPIO_Port         GPIOB
+#define TELEM_DIR_Pin              GPIO_PIN_8
+#define TELEM_DIR_GPIO_Port        GPIOB
 
 /* USER CODE BEGIN Private defines */
 
