@@ -22,6 +22,11 @@
 
 /* USER CODE BEGIN 0 */
 #include "board_params.h"
+#include "can.h"
+#include "telemetry.h"
+#include <stdint.h>
+#include <sys/types.h>
+
 volatile float speed_RPM = 0.0f;
 volatile float speed_CPS = 0.0f;
 /* USER CODE END 0 */
@@ -344,16 +349,29 @@ void set_pwm(int16_t pid_output) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    static uint8_t telemetry_counter = 0;
+
     if (htim->Instance == TIM4) // przerwanie co 10ms, 100Hz
     {
-        comm_wchdg++;
-        if (comm_wchdg >= 100 && ENABLE_WATCHDOG) { // watchdog
-            set_pwm(0);
-            PID.integ = 0;
-            PID.eps = 0;
-            PID.eps_prev = 0;
-            return;
+        if (ENABLE_TELEMETRY && ++telemetry_counter == 10) {
+            uint8_t tx_frame[8] = {
+                telemetry_frame.temperature,
+                peak_current,
+                telemetry_frame.input_voltage >> 8,
+                telemetry_frame.input_voltage & 0xFF,
+                telemetry_frame.input_voltage >> 8,
+                telemetry_frame.input_voltage & 0xFF
+            };
+            CAN_transmit(TELEMETRY_TX_ID, tx_frame, 6);
+            peak_current = 0;
+            telemetry_counter = 0;
         }
+
+        if (ENABLE_WATCHDOG && ++comm_wchdg == 100) { // watchdog
+            target_speed = 0;
+            comm_wchdg = 0;
+        }
+
         uint16_t current_cnt = __HAL_TIM_GET_COUNTER(&htim3);
         int16_t delta = (int16_t)(current_cnt - last_encoder_cnt);
         last_encoder_cnt = current_cnt;

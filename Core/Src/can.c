@@ -22,6 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "board_params.h"
+#include <stdint.h>
 
 static CAN_HandleTypeDef *can_handle = &hcan;
 
@@ -29,7 +30,7 @@ static CAN_TxHeaderTypeDef can_txHeader;
 static CAN_RxHeaderTypeDef can_rxHeader;
 static uint32_t can_txMailbox;
 
-static union Message RX_payload;
+static union Message RX_payload = {0};
 
 float speed_scale = 1.0;
 
@@ -204,8 +205,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rxHeader, RX_payload.u8);
 
     switch (can_rxHeader.StdId) {
-    case 20:
+    case BOARD_RX_ID:
         comm_wchdg = 0;
+        if (BOARD_SIDE == LEFT_SIDE)
+            target_speed = -((int16_t)((int8_t)RX_payload.u8[0])) * speed_scale;
+
+        else
+            target_speed = ((int16_t)((int8_t)RX_payload.u8[1])) * speed_scale;
+
         if (RX_payload.u8[2] != 0) {
             speed_scale = RX_payload.u8[2] / 100.0;
             if (speed_scale > 2.55 || speed_scale < 0)
@@ -214,25 +221,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
         if (RX_payload.u8[3] != 0) {
             ramp = RX_payload.u8[3];
         }
-        if (BOARD_SIDE == LEFT_SIDE)
-            target_speed = -((int16_t)((int8_t)RX_payload.u8[0])) * speed_scale;
-
-        else
-            target_speed = ((int16_t)((int8_t)RX_payload.u8[1])) * speed_scale;
+        if (RX_payload.u8[4] != 0) {
+            uint16_t temp = RX_payload.u8[4] * 10;
+            if (temp > 1600)
+                temp = 1600;
+            PID.max = temp;
+            PID.min = temp;
+        }
 
         break;
-        // case 51:
-        // 	TP = RX_payload.f32[0];
-        // 	break;
-        // case 52:
-        // 	PID_K = RX_payload.f32[0];
-        // 	break;
-        // case 53:
-        // 	PID_TD = RX_payload.f32[0];
-        // 	break;
-        // case 54:
-        // 	PID_TI = RX_payload.f32[0];
-        // 	break;
 
     default:
         break;

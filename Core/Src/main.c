@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "board_params.h"
 #include "can.h"
 #include "dma.h"
 #include "gpio.h"
@@ -104,10 +105,11 @@ int main(void) {
     HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
     HAL_TIM_Base_Start_IT(&htim4);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
-    pid_init(&PID, 200, -200, 4.0, 15.0, 0);
+    pid_init(&PID, 1600, -1600, 4.0, 15.0, 0);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
 
-    telemetry_init(&huart1);
+    if (ENABLE_TELEMETRY)
+        telemetry_init(&huart1);
     /* USER CODE END 2 */
 
     /* Infinite loop */
