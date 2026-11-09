@@ -9,6 +9,6 @@
 #define ENABLE_TELEMETRY 1
 
 #define BOARD_RX_ID     0x14
-#define TELEMETRY_TX_ID 0x15 // 0x15 - przód; 0x16 - tył
+#define TELEMETRY_TX_ID 0x16 // 0x15 - przód; 0x16 - tył
 
 #endif /* __BOARD_PARAMS_H__ */

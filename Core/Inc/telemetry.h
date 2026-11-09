@@ -35,5 +35,6 @@ typedef struct {
 
 extern volatile esc_telemetry_frame_t telemetry_frame;
 extern volatile uint16_t peak_current;
+extern volatile uint16_t avarage_current;
 
 #endif /* __TELEMETRY_H__ */

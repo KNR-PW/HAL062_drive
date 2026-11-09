@@ -1,12 +1,14 @@
 #include "telemetry.h"
 #include "main.h"
 #include "stm32f1xx_hal_gpio.h"
+#include <stdint.h>
 #include <string.h>
 
 static uint8_t rx_dma_buffer[DMA_RX_BUF_SIZE];
 static uint16_t rx_read_index = 0;
 volatile esc_telemetry_frame_t telemetry_frame;
 volatile uint16_t peak_current;
+volatile uint16_t avarage_current;
 
 uint16_t calculateCRC16(uint8_t *data, size_t len) {
     uint16_t crc = 0xFFFF;
@@ -29,6 +31,10 @@ void telemetry_init(UART_HandleTypeDef *huart) {
 }
 
 void read_single_frame() {
+    static uint16_t buff[16] = {0};
+    static uint8_t cnt = 0;
+    uint32_t sum = 0;
+
     esc_telemetry_frame_t temp_frame;
     uint16_t bytes_to_end = DMA_RX_BUF_SIZE - rx_read_index;
 
@@ -48,6 +54,13 @@ void read_single_frame() {
     }
 
     telemetry_frame = temp_frame;
+    buff[cnt & 15] = telemetry_frame.input_current;
+    for (uint8_t i = 0; i < 16; i++) {
+        sum += buff[i];
+    }
+    avarage_current = (sum * 100) / 16;
+    cnt++;
+
     if (telemetry_frame.input_current > peak_current)
         peak_current = telemetry_frame.input_current;
 }
