@@ -24,7 +24,9 @@
 #include "board_params.h"
 #include "can.h"
 #include "telemetry.h"
+#include <math.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 volatile float speed_RPM = 0.0f;
@@ -361,9 +363,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
                 telemetry_frame.input_current >> 8,
                 telemetry_frame.input_current & 0xFF,
                 telemetry_frame.input_voltage >> 8,
-                telemetry_frame.input_voltage & 0xFF
+                telemetry_frame.input_voltage & 0xFF,
+                (uint8_t)abs((int)roundf(speed_CPS)),
             };
-            CAN_transmit(TELEMETRY_TX_ID, tx_frame, 6);
+            CAN_transmit(TELEMETRY_TX_ID, tx_frame, 8);
             peak_current = 0;
             telemetry_counter = 0;
         }
