@@ -356,9 +356,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         if (ENABLE_TELEMETRY && ++telemetry_counter == 10) {
             uint8_t tx_frame[8] = {
                 telemetry_frame.temperature,
-                peak_current,
-                telemetry_frame.input_voltage >> 8,
-                telemetry_frame.input_voltage & 0xFF,
+                peak_current >> 8,
+                peak_current & 0xFF,
+                telemetry_frame.input_current >> 8,
+                telemetry_frame.input_current & 0xFF,
                 telemetry_frame.input_voltage >> 8,
                 telemetry_frame.input_voltage & 0xFF
             };

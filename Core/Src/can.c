@@ -30,8 +30,6 @@ static CAN_TxHeaderTypeDef can_txHeader;
 static CAN_RxHeaderTypeDef can_rxHeader;
 static uint32_t can_txMailbox;
 
-static union Message RX_payload = {0};
-
 float speed_scale = 1.0;
 
 uint16_t comm_wchdg = 0;
@@ -202,6 +200,7 @@ void CAN_transmit(uint8_t id, uint8_t *data, uint8_t data_lenght) {
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+    union Message RX_payload = {0};
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rxHeader, RX_payload.u8);
 
     switch (can_rxHeader.StdId) {
