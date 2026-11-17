@@ -1,7 +1,12 @@
 #include "telemetry.h"
+#include "board_params.h"
+#include "can.h"
 #include "main.h"
 #include "stm32f1xx_hal_gpio.h"
+#include "tim.h"
+#include <math.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 static uint8_t rx_dma_buffer[DMA_RX_BUF_SIZE];
@@ -54,12 +59,21 @@ void read_single_frame() {
     }
 
     telemetry_frame = temp_frame;
-    buff[cnt & 15] = telemetry_frame.input_current;
-    for (uint8_t i = 0; i < 16; i++) {
-        sum += buff[i];
+
+    if (ENABLE_TELEMETRY) {
+        uint8_t tx_frame[8] = {
+            avarage_current >> 8,
+            avarage_current & 0xFF,
+            telemetry_frame.input_current >> 8,
+            telemetry_frame.input_current & 0xFF,
+            telemetry_frame.input_voltage >> 8,
+            telemetry_frame.input_voltage & 0xFF,
+            last_encoder_cnt >> 8,
+            last_encoder_cnt & 0xFF,
+        };
+        CAN_transmit(TELEMETRY_TX_ID, tx_frame, 8);
+        peak_current = 0;
     }
-    avarage_current = (sum * 100) / 16;
-    cnt++;
 
     if (telemetry_frame.input_current > peak_current)
         peak_current = telemetry_frame.input_current;

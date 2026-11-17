@@ -24,9 +24,6 @@
 #include "board_params.h"
 #include "can.h"
 #include "telemetry.h"
-#include <math.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <sys/types.h>
 
 volatile float speed_RPM = 0.0f;
@@ -351,26 +348,8 @@ void set_pwm(int16_t pid_output) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    static uint8_t telemetry_counter = 0;
-
     if (htim->Instance == TIM4) // przerwanie co 10ms, 100Hz
     {
-        if (ENABLE_TELEMETRY && ++telemetry_counter == 10) {
-            uint8_t tx_frame[8] = {
-                telemetry_frame.temperature,
-                avarage_current >> 8,
-                avarage_current & 0xFF,
-                telemetry_frame.input_current >> 8,
-                telemetry_frame.input_current & 0xFF,
-                telemetry_frame.input_voltage >> 8,
-                telemetry_frame.input_voltage & 0xFF,
-                (uint8_t)abs((int)roundf(speed_CPS)),
-            };
-            CAN_transmit(TELEMETRY_TX_ID, tx_frame, 8);
-            peak_current = 0;
-            telemetry_counter = 0;
-        }
-
         if (ENABLE_WATCHDOG && ++comm_wchdg == 100) { // watchdog
             target_speed = 0;
             comm_wchdg = 0;

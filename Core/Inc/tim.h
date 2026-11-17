@@ -46,6 +46,7 @@ extern volatile int16_t current_speed;
 extern volatile int16_t target_speed;
 extern volatile float error;
 extern uint16_t comm_wchdg;
+
 extern pid_reg PID;
 #define PI                  3.14159265f
 #define TICKS_PER_ROTATION  4096.0f
