@@ -225,7 +225,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             if (temp > 1600)
                 temp = 1600;
             PID.max = temp;
-            PID.min = temp;
+            PID.min = -temp;
         }
 
         break;

@@ -36,10 +36,6 @@ void telemetry_init(UART_HandleTypeDef *huart) {
 }
 
 void read_single_frame() {
-    static uint16_t buff[16] = {0};
-    static uint8_t cnt = 0;
-    uint32_t sum = 0;
-
     esc_telemetry_frame_t temp_frame;
     uint16_t bytes_to_end = DMA_RX_BUF_SIZE - rx_read_index;
 

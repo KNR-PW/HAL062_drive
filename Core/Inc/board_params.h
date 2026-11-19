@@ -3,7 +3,7 @@
 
 #define LEFT_SIDE  0
 #define RIGHT_SIDE 1
-#define BOARD_SIDE RIGHT_SIDE
+#define BOARD_SIDE LEFT_SIDE
 
 #define ENABLE_WATCHDOG  1
 #define ENABLE_TELEMETRY 1
